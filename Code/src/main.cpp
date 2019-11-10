@@ -46,7 +46,7 @@ int main() {
     complex_d sig(cos(n*M_PI/nn), sin(n*M_PI/nn));*/
     complex_d lmb(2.0,0);
 
-    for (int n=10;n<500;n += 5){
+    for (int n=500;n<800;n += 5){
         // Loop parameters
         complex_d sig(1.0,0.0);
         complex_d K = 1;
