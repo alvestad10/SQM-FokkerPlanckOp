@@ -11,7 +11,7 @@
 /****************
 *** CONSTANTS ***
 *****************/
-Model MODEL = LM_HO;
+Model MODEL = LM_AHO;
 
 
 /*********************
@@ -37,9 +37,8 @@ int main() {
     */
     double x_min = -100.0;
     double x_max = 100.0;
-    int N = 100;
-    double a = (x_max-x_min) / (double)N;
-
+    int N = 500;
+    //double a = (x_max-x_min) / (double)N;
     /*
     * MODEL INDEPENDENT PARAMETERS
     */
@@ -47,12 +46,13 @@ int main() {
     complex_d sig(cos(n*M_PI/nn), sin(n*M_PI/nn));*/
     complex_d lmb(2.0,0);
 
-    for (int n=0;n<40;n++){
-        
+    for (int n=10;n<500;n += 5){
         // Loop parameters
-        complex_d sig(1.0,n);
+        complex_d sig(1.0,0.0);
         complex_d K = 1;
-        
+        N = n;
+        double a = (x_max-x_min) / (double)N;
+
         /* CONSTRUCT MATRICES */
         complex_M H;
         switch(MODEL) {
@@ -61,12 +61,15 @@ int main() {
             default      : assert(false);
         }
 
+        // If needed, print out the Fokker-Planck operator
+        //std::cout << "H:" << std::endl << H << std::endl;
+
         // Compute the eigenvalue system
-        Eigen::ComplexEigenSolver<Eigen::MatrixXcd> ces;
+        Eigen::ComplexEigenSolver<complex_M> ces;
         ces.compute(H);
 
         // If needed, print out the eigenvalues
-        //std::cout << "The eigenvalues of A are:" << std::endl << ces.eigenvalues() << std::endl;
+        //std::cout << "The eigenvalues of H are:" << std::endl << ces.eigenvalues() << std::endl;
         
         // Save eigenvalues
         /*
@@ -78,7 +81,8 @@ int main() {
         std::string filename = "../Data/" + modelname_short(MODEL) 
                                 + "/EVal_sig_" 
                                 + std::to_string((int)sig.real()) 
-                                + "_i" + std::to_string((int)n);
+                                + "_i" + std::to_string((int)sig.imag())
+                                + "_N_" + std::to_string((int)N);
         save_eigenvalues(ces.eigenvalues(), filename);
     }
     return 0;
