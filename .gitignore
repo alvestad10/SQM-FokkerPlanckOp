@@ -1,6 +1,9 @@
 
 # Project specific
 Data/*
+Figures/*
+*.html
+*.pdf
 
 # Created by https://www.gitignore.io/api/c++,python,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=c++,python,visualstudiocode

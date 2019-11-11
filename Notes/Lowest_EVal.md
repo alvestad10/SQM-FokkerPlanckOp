@@ -40,9 +40,25 @@ Setting up with the 4 parameters:
 
 ### Running tests with varying N
 The result of the caluclation of $\lambda_0$ for N=10 to N=500 with a stepsize of 10 is shown i the picture below:
-![Fig:](../Figures/LM_AHO/EVal_gs_varyN_-100_100.png)
+![Fig:](../Figures/LM_AHO/EVal_gs_varyN_10-500_on_-100_100.png)
 
 One can see that the real part of the lowest eigenvalue is in general negativ, i.e., it does not follow the theoretical prediction that this should always be positive. As this value is varying, and somtime also positive, it could be that the accuracy when doing the discritization is not good enough until one goes to $N>500$.
 
+#### Update on N>500
+Her is the same plot as above only on N>500. The eigenvalues for N>500 increase towards 0, which can mean that for $N\rightarrow \infty$ then $\textrm{Re } \lambda_0 \rightarrow 0$.
+![Fig:](../Figures/LM_AHO/EVal_gs_varyN_10-800_on_-100_100.png)
 
+### See that eigenvalues are not exact. 
+From papers calculating the same eigenvalues, the eigenvalues can be compared to see if they are the same. Comparing with (Klauder 1985: J.Stat.Phys. 39 (1985) 53-72) in the picture below:
+![Fig:](../Figures/LM_AHO/Klauder_EigenvalueInComplexPlane.png).
+
+The plot above varies the sigma parameter in the action. The vayway theave calculated the eigenvalues is by expanding the psobability distribution in the Harmonic Oscillator energy states. 
+
+![Fig:](../Figures/LM_AHO/EVal_sigma_1_i0-15_NEvals_8_on_-100_100.png)
+
+The figure above show that the eigenvalues follow the same pattern as for Klauder 1985. This is for the 8 first eigenvalues, and sigma is varied from $\sigma=1+0i$ to $\sigma=1+15i$. For higher imagenary part of the sigma, the pattern dissapear:
+
+![Fig:](../Figures/LM_AHO/EVal_sigma_1_i0-20_NEvals_8_on_-100_100.png)
+
+which could mean that we need a higher number of discretization points or a higher second derivative approximation order. The plots above is for $N=500$.
 
