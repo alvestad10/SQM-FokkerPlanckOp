@@ -11,7 +11,7 @@
 /****************
 *** CONSTANTS ***
 *****************/
-Model MODEL = LM_AHO;
+Model MODEL = LM_HO;
 
 
 /*********************
@@ -37,7 +37,10 @@ int main() {
     */
     double x_min = -100.0;
     double x_max = 100.0;
-    int N = 500;
+    int N = 250;
+    double a = (x_max-x_min) / (double)N;
+    int n_min = 0;
+    int n_max = 48;
     //double a = (x_max-x_min) / (double)N;
     /*
     * MODEL INDEPENDENT PARAMETERS
@@ -46,12 +49,12 @@ int main() {
     complex_d sig(cos(n*M_PI/nn), sin(n*M_PI/nn));*/
     complex_d lmb(2.0,0);
 
-    for (int n=500;n<800;n += 5){
+    for (int n=n_min;n<n_max;n++){
         // Loop parameters
-        complex_d sig(1.0,0.0);
-        complex_d K = 1;
-        N = n;
-        double a = (x_max-x_min) / (double)N;
+        //complex_d sig(1.0,0.0);
+        complex_d sig(cos(n*M_PI/(n_max/2.0)), sin(n*M_PI/(n_max/2.0)));
+        complex_d K = std::conj(sig);
+        
 
         /* CONSTRUCT MATRICES */
         complex_M H;
@@ -80,9 +83,10 @@ int main() {
         */
         std::string filename = "../Data/" + modelname_short(MODEL) 
                                 + "/EVal_sig_" 
-                                + std::to_string((int)sig.real()) 
-                                + "_i" + std::to_string((int)sig.imag())
-                                + "_N_" + std::to_string((int)N);
+                                + "cos("+ std::to_string(n) +"pi_"+ std::to_string(n_max/2) +")" //std::to_string((int)sig.real()) 
+                                + "_i" + "sin("+ std::to_string(n) +"pi_"+ std::to_string(n_max/2) +")" //std::to_string((int)sig.imag())
+                                + "_N_" + std::to_string((int)N) + "_K_sig*";
+        std::cout << filename << std::endl;
         save_eigenvalues(ces.eigenvalues(), filename);
     }
     return 0;
