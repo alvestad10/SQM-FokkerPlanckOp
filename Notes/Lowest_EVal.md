@@ -2,7 +2,7 @@
 
 Eigenvalue problem:
 $$
-    H_{\textrm{FP}}(x) \psi_n(x) = -\lambda_n \psi_n(x)
+    F_{\textrm{FP}}(x) \psi_n(x) = -\lambda_n \psi_n(x)
 $$
 
 The lowest eigenvalue should be $\textrm{Re } \lambda_0 = 0$, and therefore have a distribution following $e^{-\frac12 S}$.
@@ -17,15 +17,27 @@ $$
 
 with the Fokker-Planck operator
 $$\begin{aligned}
-    H_{FP} =& e^{\frac12 S(x)} \frac{\partial}{\partial x} \Gamma (x)\left( \frac{\partial}{\partial x} + \frac{\partial S(x)}{\partial x} \right)e^{-\frac12 S(x)} \\
-    =& \Gamma(x) \left[ \frac{\partial^2}{\partial x^2} - \frac{\sigma^2 x^2}{4} + \frac{3 \lambda x^2}{2} - \frac{\sigma \lambda}{2}x^4 - \frac{\lambda^2}{4}x^6 + \frac\sigma2 \right] \\
-    &+ \frac{\partial \Gamma(x)}{\partial x} \left[ \frac{\partial}{\partial x} + \frac12(\sigma x + \lambda x^3) \right]
+    F_{\textrm{FP}} =& \frac{\partial}{\partial x} \Gamma (x)\left( \frac{\partial}{\partial x} + \frac{\partial S(x)}{\partial x} \right) \\
+    =& \Gamma(x) \left[ \frac{\partial^2}{\partial x^2} + \sigma + \sigma x \frac{\partial}{\partial x} +3 \lambda x^2 + \lambda x^3 \frac{\partial}{\partial x}  \right] \\
+    &+ \frac{\partial \Gamma(x)}{\partial x} \left[ \frac{\partial}{\partial x} + \sigma x + \lambda x^3 \right]
   \end{aligned}
 $$
 
 For now we set the kernel independent of $x$: $\Gamma(x) = \Gamma$.
 $$
-H_{FP} = \Gamma \left[ \frac{\partial^2}{\partial x^2} - \frac{\sigma^2 x^2}{4} + \frac{3 \lambda x^2}{2} - \frac{\sigma \lambda}{2}x^4 - \frac{\lambda^2}{4}x^6 + \frac\sigma2 \right] 
+    F_{\textrm{FP}} = \Gamma \left[ \frac{\partial^2}{\partial x^2} +\left( \sigma + 3 \lambda x^2 \right) \frac{\partial}{\partial x} + \sigma x \frac{\partial}{\partial x} + \lambda x^3 \right]
+$$
+
+
+#### Modified Fokker-Planck operator ($H_{\textrm{FP}}$)
+
+In the literature, one often transforme the Fokker-Planck equation such that one have $H_{FP} = e^{\frac12 S(x)} F_{\textrm{FP}}e^{-\frac12 S(x)}$. This makes the operator self-asjoint, as long as it is not complex. This is also the operator which have $\lambda_0=0$ The operator in the modifie form is:
+$$\begin{aligned}
+    H_{FP} =& e^{\frac12 S(x)} F_{\textrm{FP}}e^{-\frac12 S(x)} \\
+    =& e^{\frac12 S(x)} \frac{\partial}{\partial x} \Gamma (x)\left( \frac{\partial}{\partial x} + \frac{\partial S(x)}{\partial x} \right)e^{-\frac12 S(x)} \\
+    =& \Gamma(x) \left[ \frac{\partial^2}{\partial x^2} - \frac{\sigma^2 x^2}{4} + \frac{3 \lambda x^2}{2} - \frac{\sigma \lambda}{2}x^4 - \frac{\lambda^2}{4}x^6 + \frac\sigma2 \right] \\
+    &+ \frac{\partial \Gamma(x)}{\partial x} \left[ \frac{\partial}{\partial x} + \frac12(\sigma x + \lambda x^3) \right]
+  \end{aligned}
 $$
 
 ### Large-Mass Harmonic Oscillator (LM_HO)
@@ -36,16 +48,24 @@ $$
 $$
 with the Fokker-Planck operator
 $$\begin{aligned}
-    H_{FP} =& e^{\frac12 S(x)} \frac{\partial}{\partial x} \Gamma (x)\left( \frac{\partial}{\partial x} + \frac{\partial S(x)}{\partial x} \right)e^{-\frac12 S(x)} \\
-    =& \Gamma(x) \left[ \frac{\partial^2}{\partial x^2} - \frac{\sigma^2 x^2}{4}  + \frac\sigma2 \right] \\
+    F_{\textrm{FP}} =& \frac{\partial}{\partial x} \Gamma (x)\left( \frac{\partial}{\partial x} + \frac{\partial S(x)}{\partial x} \right) \\
+    =& \Gamma(x) \left[ \frac{\partial^2}{\partial x^2} + \sigma + \sigma x \frac{\partial}{\partial x}  \right] \\
+    &+ \frac{\partial \Gamma(x)}{\partial x} \left[ \frac{\partial}{\partial x} + \sigma x \right]
+  \end{aligned}
+$$
+For now we set the kernel independent of $x$: $\Gamma(x) = \Gamma$.
+$$
+F_{\textrm{FP}} = \Gamma \left[ \frac{\partial^2}{\partial x^2} + \sigma + \sigma x \frac{\partial}{\partial x} \right] 
+$$
+
+#### Modified Fokker-Planck equation
+$$\begin{aligned}
+    H_{FP} =& \Gamma(x) \left[ \frac{\partial^2}{\partial x^2} - \frac{\sigma^2 x^2}{4}  + \frac\sigma2 \right] \\
     &+ \frac{\partial \Gamma(x)}{\partial x} \left[ \frac{\partial}{\partial x} + \frac12\sigma x \right]
   \end{aligned}
 $$
 
-For now we set the kernel independent of $x$: $\Gamma(x) = \Gamma$.
-$$
-H_{FP} = \Gamma \left[ \frac{\partial^2}{\partial x^2} - \frac{\sigma^2 x^2}{4} + \frac\sigma2 \right] 
-$$
+
 
 ### Discitization
 When discritizing summation by parts (http://oddjob.utias.utoronto.ca/dwz/Miscellaneous/SBP_SAT_review.pdf) are used on the double derivative for the boundary condition. The 4(2) order approximation is used, i.e., 4th order approximated finited difference on all but the top and lover square (boundary condition) where it is 2 order approximation.
