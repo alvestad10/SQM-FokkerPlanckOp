@@ -1,8 +1,29 @@
 #include "../lib/eigen-git-mirror/Eigen/Dense"
 #include "typedefs.hpp"
 
+/* OPERATOR ENUM */
+enum Operator { F, H };
 
-/* DerivativesS */
+std::string operator_name_short(Operator o) {
+    switch(o)
+    {
+        case F  : return "F";     break;
+        case H  : return "H";   break;
+        default : return "No matching operator name";
+    }
+}
+
+std::string operator_name(Operator o) {
+    switch(o)
+    {
+        case F   : return "Fokker-Planck Operator";     break;
+        case H  : return "Mofified Fokker-Planck Operator";   break;
+        default    : return "No matching operator name";
+    }
+}
+
+
+/* DERIVATIVES OPERATORS */
 
 
 /*

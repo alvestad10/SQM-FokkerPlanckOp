@@ -12,7 +12,7 @@
 *** CONSTANTS ***
 *****************/
 Model MODEL = LM_AHO;
-
+Operator OPERATOR = H;
 
 /*********************
 *** HELP FUNCTIONS ***
@@ -33,7 +33,7 @@ void save_eigenvalues(Eigen::VectorXcd ev, std::string filename) {
 int main() {
 
     /*
-    * LATTICE PARAMETERs
+    * SPACE PARAMETERs
     */
     double x_min = -100.0;
     double x_max = 100.0;
@@ -41,7 +41,7 @@ int main() {
     //double a = (x_max-x_min) / (double)N;
 
     /*
-    * MODEL INDEPENDENT PARAMETERS
+    * TEST RELATED PARAMETERS
     */
     int n_min = 2500;
     int n_max = 10000;
@@ -52,7 +52,6 @@ int main() {
     */
     /*
     complex_d sig(cos(n*M_PI/nn), sin(n*M_PI/nn));*/
-    char F_or_H = 'H';
     complex_d lmb(2.0,0);
     
 
@@ -69,14 +68,14 @@ int main() {
         complex_M H;
         switch(MODEL) {
             case LM_HO : 
-                if (F_or_H == 'F') {
+                if (OPERATOR == F) {
                     H = F_LM_HO_Matrix(K,sig,N,a,x_min);
                 } else {
                     H = H_LM_HO_Matrix(K,sig,N,a,x_min);
                 }
                 break;
             case LM_AHO :
-               if (F_or_H == 'F') {
+               if (OPERATOR == F) {
                     H = F_LM_AHO_Matrix(K,sig,lmb,N,a,x_min);
                 } else {
                     H = H_LM_AHO_Matrix(K,sig,lmb,N,a,x_min);
@@ -106,8 +105,9 @@ int main() {
         */
         
         std::string filename = "../Data/" + modelname_short(MODEL) 
-                                + "/EVal_H_" 
-                                + "sig_" + std::to_string((int)sig.real()) 
+                                + "/EVal_"
+                                + operator_name_short(OPERATOR) 
+                                + "_sig_" + std::to_string((int)sig.real()) 
                                 + "_i" + std::to_string((int)sig.imag())
                                 + "_N_" + std::to_string((int)N)
                                 + "_on_" + std::to_string((int)x_min)
@@ -115,8 +115,9 @@ int main() {
                                 //+ "_K_sig*";
 
         /*std::string filename = "../Data/" + modelname_short(MODEL) 
-                                + "/EVal_F_sig_" 
-                                + "cos("+ std::to_string(n) +"pi_"+ std::to_string(n_max/2) +")" //std::to_string((int)sig.real()) 
+                                + "/EVal_"
+                                + operator_name_short(OPERATOR) 
+                                + "_sig_cos("+ std::to_string(n) +"pi_"+ std::to_string(n_max/2) +")" //std::to_string((int)sig.real()) 
                                 + "_i" + "sin("+ std::to_string(n) +"pi_"+ std::to_string(n_max/2) +")" //std::to_string((int)sig.imag())
                                 + "_N_" + std::to_string((int)N);
                                 //+ "_K_sig*";
