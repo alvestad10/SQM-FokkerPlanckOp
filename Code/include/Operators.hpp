@@ -116,7 +116,7 @@ complex_M QQ_LM_AHO_Matrix(complex_d sig, complex_d lmb, int N, double a, double
     return S + SX*D1;
 }
 
-complex_M LM_AHO_Matrix(complex_d K, complex_d sig, complex_d lmb, int N, double a, double x_min) {
+complex_M H_LM_AHO_Matrix(complex_d K, complex_d sig, complex_d lmb, int N, double a, double x_min) {
     complex_M Q = Q_LM_AHO_Matrix(sig,lmb,N,a,x_min);
     complex_M D2 =(1.0/(a*a))*D2_42(N);
     Eigen::MatrixXcd H = K*(D2 + Q);
@@ -175,7 +175,7 @@ complex_M QQ_LM_HO_Matrix(complex_d sig, int N, double a, double x_min) {
 }
 
 
-complex_M LM_HO_Matrix(complex_d K, complex_d sig, int N, double a, double x_min) {
+complex_M H_LM_HO_Matrix(complex_d K, complex_d sig, int N, double a, double x_min) {
     complex_M Q = Q_LM_HO_Matrix(sig,N,a,x_min);
     complex_M D2 = (1.0/(a*a))*D2_42(N);
     complex_M H = K*(D2 + Q);

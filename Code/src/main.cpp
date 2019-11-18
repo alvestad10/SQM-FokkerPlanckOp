@@ -33,35 +33,58 @@ void save_eigenvalues(Eigen::VectorXcd ev, std::string filename) {
 int main() {
 
     /*
-    * MODEL INDEPENDENT PARAMETERS
+    * LATTICE PARAMETERs
     */
     double x_min = -100.0;
     double x_max = 100.0;
-    int N = 500;
-    double a = (x_max-x_min) / (double)N;
-    int n_min = 0;
-    int n_max = 48;
+    //int N = 500;
     //double a = (x_max-x_min) / (double)N;
+
     /*
     * MODEL INDEPENDENT PARAMETERS
     */
+    int n_min = 2500;
+    int n_max = 10000;
+    int n_step = 100;
+
+    /*
+    * MODEL DEPENDENT PARAMETERS
+    */
     /*
     complex_d sig(cos(n*M_PI/nn), sin(n*M_PI/nn));*/
+    char F_or_H = 'H';
     complex_d lmb(2.0,0);
+    
 
-    for (int n=n_min;n<n_max;n++){
-        // Loop parameters
-        //complex_d sig(1.0,0.0);
-        complex_d sig(cos(n*M_PI/(n_max/2.0)), sin(n*M_PI/(n_max/2.0)));
-        complex_d K = 1;//std::conj(sig);
+    for (int n=n_min; n<n_max; n += n_step){
         
+        // Loop parameters
+        complex_d sig(1.0,0.0);
+        //complex_d sig(cos(n*M_PI/(n_max/2.0)), sin(n*M_PI/(n_max/2.0)));
+        complex_d K = 1;//std::conj(sig);
+        int N = n;
+        double a = (x_max-x_min) / (double)N;
 
         /* CONSTRUCT MATRICES */
         complex_M H;
         switch(MODEL) {
-            case LM_HO   : H = F_LM_HO_Matrix(K,sig,N,a,x_min);     break;
-            case LM_AHO  : H = F_LM_AHO_Matrix(K,sig,lmb,N,a,x_min);   break;
-            default      : assert(false);
+            case LM_HO : 
+                if (F_or_H == 'F') {
+                    H = F_LM_HO_Matrix(K,sig,N,a,x_min);
+                } else {
+                    H = H_LM_HO_Matrix(K,sig,N,a,x_min);
+                }
+                break;
+            case LM_AHO :
+               if (F_or_H == 'F') {
+                    H = F_LM_AHO_Matrix(K,sig,lmb,N,a,x_min);
+                } else {
+                    H = H_LM_AHO_Matrix(K,sig,lmb,N,a,x_min);
+                }
+               break;
+            default : 
+                std::cout << "This model is not implemented yet" << std::endl;
+                assert(false);
         }
 
         // If needed, print out the Fokker-Planck operator
@@ -81,13 +104,23 @@ int main() {
         *         if the run is saved. For instance include x_min, x_max, a, N,
         *         sigma and D2_XX for the LM_HO case.
         */
+        
         std::string filename = "../Data/" + modelname_short(MODEL) 
+                                + "/EVal_H_" 
+                                + "sig_" + std::to_string((int)sig.real()) 
+                                + "_i" + std::to_string((int)sig.imag())
+                                + "_N_" + std::to_string((int)N)
+                                + "_on_" + std::to_string((int)x_min)
+                                + "-" + std::to_string((int)x_max);
+                                //+ "_K_sig*";
+
+        /*std::string filename = "../Data/" + modelname_short(MODEL) 
                                 + "/EVal_F_sig_" 
                                 + "cos("+ std::to_string(n) +"pi_"+ std::to_string(n_max/2) +")" //std::to_string((int)sig.real()) 
                                 + "_i" + "sin("+ std::to_string(n) +"pi_"+ std::to_string(n_max/2) +")" //std::to_string((int)sig.imag())
                                 + "_N_" + std::to_string((int)N);
                                 //+ "_K_sig*";
-        
+        */
         
         std::cout << filename << std::endl;
         save_eigenvalues(ces.eigenvalues(), filename);

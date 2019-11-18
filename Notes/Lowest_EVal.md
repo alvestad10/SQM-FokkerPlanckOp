@@ -92,6 +92,14 @@ LM_AHO            |  LM_HO
 ![Fig:](../Figures/LM_AHO/EVal_gs_varyN_10-800_on_-100_100_Zoomed.png)  |  ![Fig:](../Figures/LM_HO/EVal_gs_varyN_10-790_on_-100-100_Zoomed.png)
 
 
+#### Update for N>800
+Under is an update fro the LM_AHO model with N ranging from 10 to 2400. After N=800 the stepsize increases from 10 to 100.  
+![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-0_sig_1_i0_N_10-2400_K_1_on_-100-100.png)
+
+The zooming in on a smaller interval on the x-axis we see that the it still closes inn on 0, where the last value at 2400 is at 0.0001.
+
+![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-0_sig_1_i0_N_10-2400_K_1_on_-100-100_Zoomed.png)
+
 ### See that eigenvalues are not exact. 
 From papers calculating the same eigenvalues, the eigenvalues can be compared to see if they are the same. Comparing with (Klauder 1985: J.Stat.Phys. 39 (1985) 53-72) in the picture below:
 ![Fig:](../Figures/LM_AHO/Klauder_EigenvalueInComplexPlane.png).
@@ -109,6 +117,13 @@ which could mean that we need a higher number of discretization points or a high
 #### Update 1
 The reason why the the eigenvalues "go off course" at high Im $\sigma$ could be due to the volume of the box I simulate in. So the $x_{\textrm{min}}$ and $x_{\textrm{max}}$ should be increased. 
 
+### Need higher N when looking at higher eigenvalue
+![](../Figures/LM_AHO/EVal_Re_EvalNr_0-10_sig_1_i0_NEvals_10_N_790_K_1_on_-100-100.png)
 
+Plot above using the LM_AHO model with varying N for the 10 first eigenvalues. Other parameters same as above.
 
+It seems like the eigenvalues for the LM_AHO model comes in pairs, and I need a value of N above a limit to "split" them. This is what we see on the picture for varying the imaginary part of $\sigma$.
 
+#### Update N>800
+With the new data on N>800 the same plot as above is plotted with the 12 first eigenvalues. The 3 lowest lying eigenvalues does not change that much, and seems to be constant at this scale. The two next eigenvalues are quite intereting, as they combined again around N=1500. 
+![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-12_sig_1_i0_N_10-2400_K_1_on_-100-100.png)
