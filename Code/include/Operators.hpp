@@ -89,13 +89,71 @@ complex_M D2_42(int N) {
 ********** FOKKER-PLANCK OPERATORS ******** 
 *******************************************/
 
+/***********************************************************
+***** HARMONIC OSCILLATOR ON SCHWINGER-KELDYSH CONTOUR *****
+************************************************************
+NAME: HO_SK
+ACTION: 1/2*\sum_t [ (x_(t+1) - x_t)^2 / \Delta_t  1/2 \Delta_t sigma (x_(t+1) x_(t)^2)]
+
+*/
+
+complex_d Q_HO_SK(complex_d sig, complex_d lmb, complex_d x) {
+    return -0.25*sig*sig*x*x + (3.0/2.0)*lmb*x*x - 0.5*sig*lmb*x*x*x*x - 0.25*lmb*lmb*x*x*x*x*x*x + 0.5*sig;
+}
+
+complex_M Q_HO_SK_Matrix(complex_d sig, int N, double a, double x_min) {
+    complex_M M = complex_M::Zero(N,N);
+    for (int i = 0; i<N; i++) {
+        M(i,i) = Q_LM_AHO(sig,0.0,x_min + a*i);
+    }
+    return M;
+}
+
+complex_d QQ1_HO_SK(complex_d sig) {
+    return sig;
+}
+
+complex_d QQ2_HO_SK(complex_d sig, complex_d x) {
+    return sig*x;
+}
+
+complex_M QQ_HO_SK_Matrix(complex_d sig, int N, double a, double x_min) {
+    complex_M S = complex_M::Zero(N,N);
+    for (int i = 0; i<N; i++) {
+        S(i,i) = QQ1_LM_HO(sig);
+    }
+
+    complex_M SX = complex_M::Zero(N,N);
+    for (int i = 0; i<N; i++) {
+        SX(i,i) = QQ2_LM_HO(sig, x_min + a*i);
+    }
+
+    complex_M D1 = (1.0/(a))*D1_42(N);
+    return S + SX*D1;
+}
+
+
+complex_M H_HO_SK_Matrix(complex_d K, complex_d sig, int N, double a, double x_min) {
+    complex_M Q = Q_LM_HO_Matrix(sig,N,a,x_min);
+    complex_M D2 = (1.0/(a*a))*D2_42(N);
+    complex_M H = K*(D2 + Q);
+    return H;
+}
+
+complex_M F_HO_SK_Matrix(complex_d K, complex_d sig, int N, double a, double x_min) {
+    complex_M QQ = QQ_LM_HO_Matrix(sig,N,a,x_min);
+    complex_M D2 =(1.0/(a*a))*D2_42(N);
+    Eigen::MatrixXcd F = -K*(D2 + QQ);
+    return F;
+}
+
 
 /*******************************************
 ***** LARGE MASS ANHARMONIC OSCILLATOR *****
 ********************************************
 
 NAME: LM_AHO
-ACTION: 1/2 m omega^2 x^2 + 1/4 \lambda x^4
+ACTION: 1/2 sigma x^2 + 1/4 \lambda x^4
 
 */
 
@@ -157,7 +215,7 @@ complex_M F_LM_AHO_Matrix(complex_d K, complex_d sig, complex_d lmb, int N, doub
 ********************************************
 
 NAME: LM_HO
-ACTION: 1/2 m omega^2 x^2 
+ACTION: 1/2 sigma x^2 
 
 */
 
@@ -218,8 +276,8 @@ complex_M F_LM_HO_Matrix(complex_d K, complex_d sig, int N, double a, double x_m
 ***** OTHER OUTDATED FUNCTIONS *****
 ********************************************
 
-NAME: LM_HO
-ACTION: 1/2 m omega^2 x^2 
+NAME: 
+ACTION: 
 
 */
 
