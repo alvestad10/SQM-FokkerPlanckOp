@@ -100,6 +100,11 @@ The zooming in on a smaller interval on the x-axis we see that the it still clos
 
 ![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-0_sig_1_i0_N_10-2400_K_1_on_-100-100_Zoomed.png)
 
+#### Update N=4100
+The lowest lying eigenvalue have reached the point of not changing too much, very close to 0.0.
+![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-12_sig_1_i0_N_10-4100_K_1_on_-100-100_Zoomed_Eval0.png)
+
+
 ### See that eigenvalues are not exact. 
 From papers calculating the same eigenvalues, the eigenvalues can be compared to see if they are the same. Comparing with (Klauder 1985: J.Stat.Phys. 39 (1985) 53-72) in the picture below:
 ![Fig:](../Figures/LM_AHO/Klauder_EigenvalueInComplexPlane.png).
@@ -127,3 +132,10 @@ It seems like the eigenvalues for the LM_AHO model comes in pairs, and I need a 
 #### Update N>800
 With the new data on N>800 the same plot as above is plotted with the 12 first eigenvalues. The 3 lowest lying eigenvalues does not change that much, and seems to be constant at this scale. The two next eigenvalues are quite intereting, as they combined again around N=1500. 
 ![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-12_sig_1_i0_N_10-2400_K_1_on_-100-100.png)
+
+#### Update N=4100
+At this point the interesting two wigenvalues from the above update continues to cross, and somehow splits again (switching order).
+![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-12_sig_1_i0_N_10-4100_K_1_on_-100-100.png)
+![](../Figures/LM_AHO/EVal_H_Re_EvalNr_0-12_sig_1_i0_N_10-4100_K_1_on_-100-100_Zoomed_Eval3-4.png)
+
+The eigenvalues above this seem to still change, and might cross over eachother at some later N.

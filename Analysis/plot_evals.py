@@ -11,10 +11,10 @@ ROOT_FIGURES = os.path.join('../Figures/', MODEL)
 columns = ["Re","Im"]
 
 # Testing specifics
-N_evals = 13
+N_evals = 1
 N_lowest_eval = 0
 i_min = 10
-i_max = 2400
+i_max = 4100
 steps = 10
 
 # Lattice parameters
@@ -69,8 +69,11 @@ for i in range(i_min,i_max,steps):
     if x_min_max:
         filename += "_on_" + str(x_min) + "-" + str(x_max)
 
-    #df = pd.read_csv(os.path.join(ROOT_DATA,"EVal_sig_1_i" + str(0) + '_N_' + str(i)), header=None, names=columns).sort_values(by=['Re'], ascending = False)[0:N_evals].reset_index()
-    df = pd.read_csv(os.path.join(ROOT_DATA,filename), header=None, names=columns).reset_index()[N_lowest_eval:N_lowest_eval + N_evals]
+    df = pd.read_csv(os.path.join(ROOT_DATA,filename),
+                     header=None,
+                     names=columns).sort_values(by=['Re'], ascending = False)\
+                                   .reset_index(drop=True)[N_lowest_eval:N_lowest_eval + N_evals]\
+                                   .reset_index()
 
     if sig_cos_sin:
         df['N'] = i/(48)
@@ -96,9 +99,9 @@ elif vary_sig_Im:
     sns.scatterplot(data=all_ev, x="Re", y="Im", hue="index")
     plt.title("Varying Complex part of sigma")
 elif vary_N:
-    sns.scatterplot(data=all_ev, x="N", y="Re", hue="index")
-    plt.title("The eigenvalues for varying N")
-    #plt.title("Lowest eigenvalue for given N")
+    sns.scatterplot(data=all_ev, x="N", y="Re")#, hue="index")
+    #plt.title("The eigenvalues for varying N")
+    plt.title("Lowest eigenvalue for given N")
 
 
 plot_filename = "EVal"
@@ -129,7 +132,7 @@ plot_filename += "_K_" + K
 
 plot_filename += "_on_"+ str(x_min) +'-'+ str(x_max)
 
-plt.ylim([-0.01,40])
+plt.ylim([-0.001,0.0001])
 
 #plt.savefig(os.path.join(ROOT_FIGURES, 'EVal_sigma_1_i0-20_NEvals_8_on_-100_100'))
 plt.savefig(os.path.join(ROOT_FIGURES, plot_filename))

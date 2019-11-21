@@ -10,6 +10,7 @@ numpy = "*"
 matplotlib = "*"
 pandas = "*"
 seaborn = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.6"
