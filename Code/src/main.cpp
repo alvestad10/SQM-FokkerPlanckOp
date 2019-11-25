@@ -43,7 +43,7 @@ int main() {
     /*
     * TEST RELATED PARAMETERS
     */
-    int n_min = 2500;
+    int n_min = 3700;
     int n_max = 10000;
     int n_step = 100;
 
@@ -90,8 +90,10 @@ int main() {
         //std::cout << "H:" << std::endl << H << std::endl;
 
         // Compute the eigenvalue system
-        Eigen::ComplexEigenSolver<complex_M> ces;
-        ces.compute(H);
+        //Eigen::ComplexEigenSolver<complex_M> ces;
+        Eigen::SelfAdjointEigenSolver<complex_M> sae;
+        sae.compute(H);
+        //ces.compute(H);
 
         // If needed, print out the eigenvalues
         //std::cout << "The eigenvalues of H are:" << std::endl << ces.eigenvalues() << std::endl;
@@ -124,7 +126,7 @@ int main() {
         */
         
         std::cout << filename << std::endl;
-        save_eigenvalues(ces.eigenvalues(), filename);
+        save_eigenvalues(sae.eigenvalues(), filename);
     }
     return 0;
 }

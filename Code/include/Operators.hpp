@@ -104,7 +104,7 @@ complex_d Q_HO_SK(complex_d sig, complex_d lmb, complex_d x) {
 complex_M Q_HO_SK_Matrix(complex_d sig, int N, double a, double x_min) {
     complex_M M = complex_M::Zero(N,N);
     for (int i = 0; i<N; i++) {
-        M(i,i) = Q_LM_AHO(sig,0.0,x_min + a*i);
+        M(i,i) = Q_HO_SK(sig,0.0,x_min + a*i);
     }
     return M;
 }
@@ -120,12 +120,12 @@ complex_d QQ2_HO_SK(complex_d sig, complex_d x) {
 complex_M QQ_HO_SK_Matrix(complex_d sig, int N, double a, double x_min) {
     complex_M S = complex_M::Zero(N,N);
     for (int i = 0; i<N; i++) {
-        S(i,i) = QQ1_LM_HO(sig);
+        S(i,i) = QQ1_HO_SK(sig);
     }
 
     complex_M SX = complex_M::Zero(N,N);
     for (int i = 0; i<N; i++) {
-        SX(i,i) = QQ2_LM_HO(sig, x_min + a*i);
+        SX(i,i) = QQ2_HO_SK(sig, x_min + a*i);
     }
 
     complex_M D1 = (1.0/(a))*D1_42(N);
@@ -134,14 +134,14 @@ complex_M QQ_HO_SK_Matrix(complex_d sig, int N, double a, double x_min) {
 
 
 complex_M H_HO_SK_Matrix(complex_d K, complex_d sig, int N, double a, double x_min) {
-    complex_M Q = Q_LM_HO_Matrix(sig,N,a,x_min);
+    complex_M Q = Q_HO_SK_Matrix(sig,N,a,x_min);
     complex_M D2 = (1.0/(a*a))*D2_42(N);
     complex_M H = K*(D2 + Q);
     return H;
 }
 
 complex_M F_HO_SK_Matrix(complex_d K, complex_d sig, int N, double a, double x_min) {
-    complex_M QQ = QQ_LM_HO_Matrix(sig,N,a,x_min);
+    complex_M QQ = QQ_HO_SK_Matrix(sig,N,a,x_min);
     complex_M D2 =(1.0/(a*a))*D2_42(N);
     Eigen::MatrixXcd F = -K*(D2 + QQ);
     return F;
