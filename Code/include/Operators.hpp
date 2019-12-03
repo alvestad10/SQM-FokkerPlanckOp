@@ -43,7 +43,7 @@ std::string boundary_name(Boundary b) {
 }
 
 /* Some constants */
-Boundary BOUNDARY = PERIODIC;
+Boundary BOUNDARY = SBP;
 
 
 /* DERIVATIVES OPERATORS */
