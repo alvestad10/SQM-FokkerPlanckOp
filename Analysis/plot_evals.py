@@ -82,9 +82,12 @@ class Test_parent:
             filename += "_on_" + str(V_MIN) + "-" + str(V_MAX)
         
         if self.PERIODIC:
-            filename += "__PERIODIC"
+            filename += self.periodic()
 
         self.filename = filename
+
+    def periodic(self):
+        return "__PERIODIC"
 
     def param_txt(self):
         return ""
@@ -99,8 +102,8 @@ class Test_parent:
                              names=COLUMNS).sort_values(by=[Re_Im], ascending = False)\
                                            .reset_index(drop=True)[LEVAL:LEVAL + NEVALS]\
                                            .reset_index()
-        
-    
+
+
     def add_to_all_ev(self):
         """
         Add data to all_ev, which contains all the relevant eigenvalues
@@ -172,6 +175,8 @@ class Test_vary_N(Test_parent):
 
         self.convert_eigen_sgn()
 
+    def periodic(self):
+        return "__" + self.B
 
     def param_txt(self):
         """
