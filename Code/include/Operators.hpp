@@ -22,6 +22,29 @@ std::string operator_name(Operator o) {
     }
 }
 
+/* BOUNDARY ENUM */
+enum Boundary { SBP, PERIODIC };
+std::string boundary_name_short(Boundary b) {
+    switch(b)
+    {
+        case SBP  : return "SBP";     break;
+        case PERIODIC  : return "PERIODIC";   break;
+        default : return "No matching boundary condition";
+    }
+}
+
+std::string boundary_name(Boundary b) {
+    switch(b)
+    {
+        case SBP   : return "Summation-by-part";     break;
+        case PERIODIC  : return "Periodic boundary condition";   break;
+        default    : return "No matching boundary condition";
+    }
+}
+
+/* Some constants */
+Boundary BOUNDARY = PERIODIC;
+
 
 /* DERIVATIVES OPERATORS */
 
@@ -31,57 +54,86 @@ std::string operator_name(Operator o) {
 * http://oddjob.utias.utoronto.ca/dwz/Miscellaneous/SBP_SAT_review.pdf
 */
 complex_M D1_42(int N) {
-    double h11 = 17.0/48.0; double h22 = 59.0/48.0;
-    double h33 = 43.0/48.0; double h44 = 49.0/48.0;
 
-    double q11 = -1.0/2.0;  double q12 = 59.0/96.0;
-    double q13 = -1.0/12.0; double q14 = -1.0/32.0;
-    double q23 = 59.0/96.0; double q24 = 0.0;
-    double q34 = 59.0/96.0;
-    
-    // Write test: N must be larger than 8
+    if (BOUNDARY == SBP) {
+        double h11 = 17.0/48.0; double h22 = 59.0/48.0;
+        double h33 = 43.0/48.0; double h44 = 49.0/48.0;
 
-    //setting up H and D1
-    complex_M H = complex_M::Zero(N,N);
-    
-    // Optimize this!
-    for (int i = 0; i<N; i++) {
-        H(i,i) = 1.0;
-    }
-    H(0,0) = h11; H(N-1,N-1) = h11;
-    H(1,1) = h22; H(N-2,N-2) = h22;
-    H(2,2) = h33; H(N-3,N-3) = h33;
-    H(3,3) = h44; H(N-4,N-4) = h44;
-    
-    complex_M Q = complex_M::Zero(N,N);
-    Q(0,0) = q11;  Q(0,1) = q12; Q(0,2) = q13; Q(0,3) = q14;
-    Q(1,0) = -q12;               Q(1,2) = q23; Q(1,3) = q24;
-    Q(2,0) = -q13; Q(2,1) = -q23;              Q(2,3) = q34; Q(2,4) = -1.0/12.0;
-    Q(3,0) = -q14; Q(3,1) = -q24; Q(3,2) = -q34;             Q(3,4) = 2.0/3.0; Q(3,5) = -1.0/12.0;
+        double q11 = -1.0/2.0;  double q12 = 59.0/96.0;
+        double q13 = -1.0/12.0; double q14 = -1.0/32.0;
+        double q23 = 59.0/96.0; double q24 = 0.0;
+        double q34 = 59.0/96.0;
+        
+        // Write test: N must be larger than 8
 
-    //internal nodes
-    for (int i = 4; i<N-5; i++) {
-        Q(i,i-2) = 1.0/12.0; Q(i,i-1) = -2.0/3.0;
-        Q(i,i+1) = 2.0/3.0; Q(i,i+2) = -1.0/12.0;
-    }
-
-    //bottom portion of the matrix
-    for (int i = 0; i<7; i++) {
-        for (int j=0; j<7; j++) {
-            Q(N-i-1,N-j-1) = -Q(i,j);
+        //setting up H and D1
+        complex_M H = complex_M::Zero(N,N);
+        
+        // Optimize this!
+        for (int i = 0; i<N; i++) {
+            H(i,i) = 1.0;
         }
-    }
+        H(0,0) = h11; H(N-1,N-1) = h11;
+        H(1,1) = h22; H(N-2,N-2) = h22;
+        H(2,2) = h33; H(N-3,N-3) = h33;
+        H(3,3) = h44; H(N-4,N-4) = h44;
+        
+        complex_M Q = complex_M::Zero(N,N);
+        Q(0,0) = q11;  Q(0,1) = q12; Q(0,2) = q13; Q(0,3) = q14;
+        Q(1,0) = -q12;               Q(1,2) = q23; Q(1,3) = q24;
+        Q(2,0) = -q13; Q(2,1) = -q23;              Q(2,3) = q34; Q(2,4) = -1.0/12.0;
+        Q(3,0) = -q14; Q(3,1) = -q24; Q(3,2) = -q34;             Q(3,4) = 2.0/3.0; Q(3,5) = -1.0/12.0;
 
-    return H.inverse()*Q;
+        //internal nodes
+        for (int i = 4; i<N-5; i++) {
+            Q(i,i-2) = 1.0/12.0; Q(i,i-1) = -2.0/3.0;
+            Q(i,i+1) = 2.0/3.0; Q(i,i+2) = -1.0/12.0;
+        }
+
+        //bottom portion of the matrix
+        for (int i = 0; i<7; i++) {
+            for (int j=0; j<7; j++) {
+                Q(N-i-1,N-j-1) = -Q(i,j);
+            }
+        }
+
+        return H.inverse()*Q;
+    
+    } else if (BOUNDARY == PERIODIC) {
+
+        complex_M H = complex_M::Zero(N,N);
+        
+        for (int i = 0; i<N; i++) {
+            H(i,(N+i-1)%N) = -1.0;
+            H(i,(N+i+1)%N) = 1.0;
+        }
+
+        //std::cout << "H:" << std::endl << H << std::endl;
+
+        return 0.5*H;
+    }
+    std::cout << "Type of boundary condition must be specified!" << std::endl;
+    return complex_M::Zero(N,N);
 
 }
 
 complex_M D2_42(int N) {
 
+    if (BOUNDARY == PERIODIC) {
+        complex_M D2 = complex_M::Zero(N,N);
+        
+        for (int i = 0; i<N; i++) {
+            D2(i,i) = -2.0;
+            D2(i,(N+i-1)%N) = 1.0;
+            D2(i,(N+i+1)%N) = 1.0;
+        }
+        //std::cout << "D2:" << std::endl << D2 << std::endl;
+        return D2;
+    }
     complex_M D1 = D1_42(N);
 
+    //std::cout << "D2:" << std::endl << D1*D1 << std::endl;
     return D1*D1;    
-
 }
 
 

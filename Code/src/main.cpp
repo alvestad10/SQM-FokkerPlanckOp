@@ -43,9 +43,10 @@ int main() {
     /*
     * TEST RELATED PARAMETERS
     */
-    int n_min = 3700;
-    int n_max = 10000;
-    int n_step = 100;
+    int n_min = 1000;//3700;
+    int n_max = 2000;//10000;
+    int n_step = 20;//100;
+
 
     /*
     * MODEL DEPENDENT PARAMETERS
@@ -113,7 +114,8 @@ int main() {
                                 + "_i" + std::to_string((int)sig.imag())
                                 + "_N_" + std::to_string((int)N)
                                 + "_on_" + std::to_string((int)x_min)
-                                + "-" + std::to_string((int)x_max);
+                                + "-" + std::to_string((int)x_max)
+                                + "__PERIODIC";
                                 //+ "_K_sig*";
 
         /*std::string filename = "../Data/" + modelname_short(MODEL) 
