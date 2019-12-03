@@ -5,14 +5,16 @@
 #include "typedefs.hpp"
 #include "models.hpp"
 #include "Operators.hpp"
+#include "tests.hpp"
 #include "../lib/eigen-git-mirror/Eigen/Dense"
 
 
 /****************
 *** CONSTANTS ***
 *****************/
-Model MODEL = LM_AHO;
+Model MODEL = LM_HO;
 Operator OPERATOR = H;
+Test TEST = SIG_UNIT_CIRCLE;
 
 /*********************
 *** HELP FUNCTIONS ***
@@ -29,23 +31,35 @@ void save_eigenvalues(Eigen::VectorXcd ev, std::string filename) {
     }
 }
 
+void save_eigenvectors(Eigen::MatrixXcd ev, std::string filename) {
+    std::ofstream outFile(filename);
+    Eigen::IOFormat CleanFP(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    //std::cout << ev.imag() << "\n";
+    outFile << ev.real().format(CleanFP) << "\n";
+    /*for (int i = 0; i<)
+    for (const complex_d &e : ev.real()) {
+        outFile << std::to_string(e.real()) << "," 
+                << std::to_string(e.imag()) << "\n";
+    }*/
+}
+
 
 int main() {
 
     /*
     * SPACE PARAMETERs
     */
-    double x_min = -100.0;
-    double x_max = 100.0;
+    double x_min = -20.0;
+    double x_max = 20.0;
     //int N = 500;
     //double a = (x_max-x_min) / (double)N;
 
     /*
     * TEST RELATED PARAMETERS
     */
-    int n_min = 1000;//3700;
-    int n_max = 2000;//10000;
-    int n_step = 20;//100;
+    int n_min = 0;//3700;
+    int n_max = 50;//10000;
+    int n_step = 1;//100;
 
 
     /*
@@ -59,10 +73,10 @@ int main() {
     for (int n=n_min; n<n_max; n += n_step){
         
         // Loop parameters
-        complex_d sig(1.0,0.0);
-        //complex_d sig(cos(n*M_PI/(n_max/2.0)), sin(n*M_PI/(n_max/2.0)));
+        //complex_d sig(1.0,n);
+        complex_d sig(cos(n*M_PI/(n_max/2.0)), sin(n*M_PI/(n_max/2.0)));
         complex_d K = 1;//std::conj(sig);
-        int N = n;
+        int N = 200;
         double a = (x_max-x_min) / (double)N;
 
         /* CONSTRUCT MATRICES */
@@ -91,9 +105,9 @@ int main() {
         //std::cout << "H:" << std::endl << H << std::endl;
 
         // Compute the eigenvalue system
-        //Eigen::ComplexEigenSolver<complex_M> ces;
-        Eigen::SelfAdjointEigenSolver<complex_M> sae;
-        sae.compute(H);
+        Eigen::ComplexEigenSolver<complex_M> ces;
+        //Eigen::SelfAdjointEigenSolver<complex_M> sae;
+        ces.compute(H);
         //ces.compute(H);
 
         // If needed, print out the eigenvalues
@@ -107,17 +121,27 @@ int main() {
         *         sigma and D2_XX for the LM_HO case.
         */
         
-        std::string filename = "../Data/" + modelname_short(MODEL) 
+        std::string filename_eval = "../Data/" + modelname_short(MODEL) 
                                 + "/EVal_"
                                 + operator_name_short(OPERATOR) 
-                                + "_sig_" + std::to_string((int)sig.real()) 
-                                + "_i" + std::to_string((int)sig.imag())
+                                + param_filename_txt(TEST, sig, n, n_max)
                                 + "_N_" + std::to_string((int)N)
                                 + "_on_" + std::to_string((int)x_min)
                                 + "-" + std::to_string((int)x_max)
-                                + "__PERIODIC";
+                                + "__" + boundary_name_short(BOUNDARY);
                                 //+ "_K_sig*";
 
+        std::string filename_evec = "../Data/" + modelname_short(MODEL) 
+                                + "/EVecs/Evecs_"
+                                + operator_name_short(OPERATOR) 
+                                + param_filename_txt(TEST, sig, n, n_max)
+                                + "_N_" + std::to_string((int)N)
+                                + "_on_" + std::to_string((int)x_min)
+                                + "-" + std::to_string((int)x_max)
+                                + "__" + boundary_name_short(BOUNDARY);
+                                //+ "_K_sig*";
+
+        
         /*std::string filename = "../Data/" + modelname_short(MODEL) 
                                 + "/EVal_"
                                 + operator_name_short(OPERATOR) 
@@ -127,8 +151,9 @@ int main() {
                                 //+ "_K_sig*";
         */
         
-        std::cout << filename << std::endl;
-        save_eigenvalues(sae.eigenvalues(), filename);
+        std::cout << filename_eval << std::endl;
+        save_eigenvalues(ces.eigenvalues(), filename_eval);
+        save_eigenvectors(ces.eigenvectors(), filename_evec);
     }
     return 0;
 }
