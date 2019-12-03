@@ -31,105 +31,242 @@ from analysis_settings import V_MIN,\
                               N
 
 # TODO: Find this from folder
-i_min = 10
-i_max = 6100
-steps = 10
-
-i_min = 0
-i_max = 10
-steps = 1
+#i_min = 100
+#i_max = 1000
+#steps = 20
 
 
-# CONSTANTS (Remove these)
-#F = False
-#H = False
-#TEST = None
-#K="1"
-#NEVALS = 1
-#LEVALS = 0
-#Re_Im = "Re"
 
-def construct_filenames():
-    pass
-
-def get_ranges_from_available_files():
-    pass
-
-def read_data():
-    pass
-
-
-# TESTING SPECIFIC FUNCTIONS
-def sig_cos_sin_test():
-    pass
-
-def vary_sig_Im():
-    pass
-
-def vary_N():
-    pass
-
-def loop():
-
-    # Constants that will change
-    v_min_max = V_MIN_MAX
-    HH=H
-
-    for i in range(i_min,i_max,steps):
+class Test_parent:
+    """
+    All functions and data related to the specific test is
+    stored in this class. Look into one of the child classes
+    to finc specific usage
+    """
+    def __init__(self,NN,KK,h,f,periodic,v_min_max):
+        self.N = NN # Number of points in x direction
+        self.K = KK # The kernel
         
-        if (i == 800):
-            v_min_max = True
-            HH = True
+        self.H = h # If the modified Fokker-Planck operator should be used
+        self.F = f # If the Fokker-Planck should be used
         
-        if (i>800):
-            if i%100 != 0: continue
+        self.PERIODIC = periodic # Periodic boundary condition
+        self.V_MIN_MAX = v_min_max # Add min and max in colume when searching for filename
 
-        #if TEST == Test.VARY_N:
-        #    N = i
+        self.filenames = [] # TO BE USED LATER
 
-        # Construct filename
+
+    def construct_filename(self):
+        """
+        Construct the filename for the specifi set of eigenvalues
+        """
+
         filename = "EVal"
-        if F:
+        if self.F:
             filename += '_F'
-        elif HH:
-            filename += '_H'
+        elif self.H:
+            filename = filename + '_H'
 
-        if TEST == Test.SIG_UNIT_CIRCLE:
-            filename += "_sig_cos("+ str(i) + "pi_" + str(24) +")_isin("+ str(i) + "pi_"+ str(24) +")"
-        elif TEST == Test.SIG_IM:
-            filename += "_sig_" + str(1) + "_i" + str(i)
-        elif TEST == Test.VARY_N:
-            filename += "_sig_" + str(1) + "_i" + str(0)    
-        
-        if N != None:
-            filename += "_N_" + str(N)
+        # This can be changed specific to the test
+        filename += self.param_txt()
 
-        if K != "1":
+        # This should be removed when all eigenvalues files contain N
+        if self.N != None:
+            filename += "_N_" + str(self.N)
+
+        # Checking if the kernel is added to data filname
+        if self.K != "1":
             filename += "_K_" + K
-        
-        if v_min_max:
+
+        if self.V_MIN_MAX:
             filename += "_on_" + str(V_MIN) + "-" + str(V_MAX)
-
         
-        df = pd.read_csv(os.path.join(ROOT_DATA_MODEL,filename),
-                        header=None,
-                        names=COLUMNS).sort_values(by=['Re'], ascending = False)\
-                                    .reset_index(drop=True)[LEVAL:LEVAL + NEVALS]\
-                                    .reset_index()
+        if self.PERIODIC:
+            filename += "__PERIODIC"
 
-        if TEST == Test.SIG_UNIT_CIRCLE:
-            df['N'] = i/(48)
-        elif TEST in (Test.SIG_IM, Test.VARY_N):
-            df['N'] = N
+        self.filename = filename
 
-        if (i==i_min):
-            all_ev = df
+    def param_txt(self):
+        return ""
+
+    def read_file(self):
+        """
+        Reading the file corresponding to the filname
+        MOST run get filename first
+        """
+        self.data = pd.read_csv(os.path.join(ROOT_DATA_MODEL,self.filename),
+                             header=None,
+                             names=COLUMNS).sort_values(by=[Re_Im], ascending = False)\
+                                           .reset_index(drop=True)[LEVAL:LEVAL + NEVALS]\
+                                           .reset_index()
+        
+    
+    def add_to_all_ev(self):
+        """
+        Add data to all_ev, which contains all the relevant eigenvalues
+        """
+        # Creating the all_ev variabel if it do not exist
+        try:
+            self.all_ev = pd.concat([self.all_ev,self.data])
+        except:
+            self.all_ev = self.data
+
+
+    def convert_eigen_sgn(self):
+        """
+        Conver to positive sign eigenvalues
+        """
+        self.all_ev.Re = self.all_ev.Re*(-1)
+        self.all_ev.Im = self.all_ev.Im*(-1)
+
+    def plot(self):
+        print("Plot is not implemented")
+    
+    def save(self):
+        print("Save is not implemented")
+
+
+
+
+
+class Test_vary_N(Test_parent):
+    """
+    This test is for varying the N (number of poits in x direction).
+
+    @input
+    KK: Kernel used
+    h: If modified FP used
+    f: If FP used
+    R: Real value of sigma
+    I: Imaginary value of sigma
+    B: Boundary condition (SBP, PERIODIC)
+    v_min_max: if V_min_max is used
+
+    """
+    def __init__(self,KK, h,f,periodic, R, I, B, v_min_max):
+        Test_parent.__init__(self,0,KK,h,f,periodic,v_min_max)
+        self.R = R
+        self.I = I
+        self.B = B
+
+    def loop(self, i_min, i_max, i_step):
+        for i in range(i_min, i_max, i_step):
+            
+            # Old vary_N files do not include H or V_min_max
+            if (i==800):
+                self.H = True
+                self.V_MIN_MAX = True
+
+            # Setting N for this loop
+            self.N = i
+
+            self.construct_filename()
+            # Testing in case the file does not exist
+            try:
+                self.read_file()
+            except:
+                continue
+            # Adding N and B to the dataframe
+            self.add_to_data()
+            self.add_to_all_ev()
+
+        self.convert_eigen_sgn()
+
+
+    def param_txt(self):
+        """
+        The sigma parameter text
+        """
+        return "_sig_" + str(self.R) + "_i" + str(self.I)
+
+
+    def add_to_data(self):
+        """
+        Adding N and B to the data dataframe
+        """
+        self.data['N'] = self.N
+        self.data['B'] = self.B
+
+    
+    def merge(self, test2):
+        """
+        Merging to tests to be able to plot them side by side
+        """
+        self.all_ev = pd.concat([self.all_ev,test2.all_ev])
+        self.all_ev['I+B'] = self.all_ev['index'].map(str) + "_" +self.all_ev.B
+    
+
+    def plot(self):
+        """
+        Plotting the all_ev eigenvalues
+        (must run plt.show() after this) 
+        """
+        if NEVALS == 1:
+            sns.lineplot(data=self.all_ev, x="N", y="Re", hue="B")
+            plt.title("Lowest eigenvalue for given N")
+            if LEVAL > 0:
+                plt.ylim([-0.01,40])
+            plt.legend()
         else:
-            all_ev = pd.concat([all_ev,df])
+            sns.lineplot(data=self.all_ev, x="N", y="Re", hue="I+B")
+            plt.title("The eigenvalues for varying N")
+            plt.ylim([-0.01,40])
+            plt.legend()
 
-    all_ev.Re = all_ev.Re*(-1)
-    all_ev.Im = all_ev.Im*(-1)
 
+class Test_sig_im(Test_parent):
+    """
+    This test is for varying the imagenary part of sigma parameter in the potential.
+
+    @input
+    NN: Number of points in x direction
+    KK: Kernel used
+    h: If modified FP used
+    f: If FP used
+    R: Real value of sigma
+    I: Imaginary value of sigma
+    B: Boundary condition (SBP, PERIODIC)
+    v_min_max: if V_min_max is used
+
+    """
+    def __init__(self,NN,KK, h,f,periodic, R, I, v_min_max):
+        Test_parent.__init__(self,NN,KK,h,f,periodic,v_min_max)
+        self.update_R_I(R,I)
+
+    def update_R_I(self, R, I):
+        self.R = R
+        self.I = I
+
+    def param_txt(self):
+        return "_sig_" + str(self.R) + "_i" + str(self.I)
+    
+    def add_to_data(self):
+        self.data['N'] = self.N
+
+    def plot(self):
+        sns.scatterplot(data=self.all_ev, x="Re", y="Im", hue="index")
+        plt.title("Varying Complex part of sigma")
+
+
+class Test_sig_unit_circle(Test_parent):
+    
+    def init_new(self, k, n):
+        self.k = k
+        self.n = n
+
+    def param_txt(self):
+        return "_sig_cos("+ str(self.k) + "pi_" + str(self.n) +")_isin("+ str(self.k) + "pi_"+ str(self.n) +")"
+
+    def add_to_data(self):
+        self.data['N'] = self.k/(48)
+    
+    def plot(self):
+        sns.lineplot(data=self.all_ev, x="N", y="Re", hue="index")
+        plt.title("Vary sigma on unit circle")
+
+
+def plotfilename():
+    """
     if TEST == Test.SIG_UNIT_CIRCLE:
         sns.lineplot(data=all_ev, x="N", y="Re", hue="index")
         plt.title("Vary sigma on unit circle")
@@ -138,12 +275,16 @@ def loop():
         plt.title("Varying Complex part of sigma")
     elif TEST == Test.VARY_N:
         if NEVALS == 1:
-            sns.lineplot(data=all_ev, x="N", y="Re")
+            sns.lineplot(data=all_ev, x="N", y="Re", hue="B")
             plt.title("Lowest eigenvalue for given N")
+            if LEVAL > 0:
+                plt.ylim([-0.01,40])
+            plt.legend()
         else:
-            sns.lineplot(data=all_ev, x="N", y="Re", hue="index")
+            sns.lineplot(data=all_ev, x="N", y="Re", hue="I+B")
             plt.title("The eigenvalues for varying N")
             plt.ylim([-0.01,40])
+            plt.legend()
 
 
     plot_filename = "EVal"
@@ -183,6 +324,8 @@ def loop():
 
     if SHOW:
         plt.show()
+    """
+    pass
 
 
 if __name__ == "__main__":
@@ -283,4 +426,13 @@ if __name__ == "__main__":
     else:
         assert False, "Must specify test, see test enum in analysis_settings.py"
     
-    loop()
+    if TEST == Test.VARY_N:
+        test = Test_vary_N(K,True,False,True,1,0,"PERIODIC",True)
+        test2 = Test_vary_N(K,False,False,False,1,0,"SBP",False)
+
+        test.loop(100,2000,10)
+        test2.loop(100,2000,10)
+
+        test.merge(test2)
+        test.plot()
+        plt.show()

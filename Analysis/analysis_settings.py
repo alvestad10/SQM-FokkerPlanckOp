@@ -62,7 +62,7 @@ COLUMNS = ["Re","Im"]
 N = 250
 V_MIN = -100
 V_MAX = 100
-V_MIN_MAX = False
+V_MIN_MAX = True
 
 
 #--------------------------------------------------#
