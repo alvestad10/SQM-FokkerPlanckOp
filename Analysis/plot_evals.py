@@ -35,72 +35,6 @@ from Tests import Test_vary_N,\
                   Test_sig_unit_circle
 
 
-
-
-
-def plotfilename():
-    """
-    if TEST == Test.SIG_UNIT_CIRCLE:
-        sns.lineplot(data=all_ev, x="N", y="Re", hue="index")
-        plt.title("Vary sigma on unit circle")
-    elif TEST == Test.SIG_IM:
-        sns.scatterplot(data=all_ev, x="Re", y="Im", hue="index")
-        plt.title("Varying Complex part of sigma")
-    elif TEST == Test.VARY_N:
-        if NEVALS == 1:
-            sns.lineplot(data=all_ev, x="N", y="Re", hue="B")
-            plt.title("Lowest eigenvalue for given N")
-            if LEVAL > 0:
-                plt.ylim([-0.01,40])
-            plt.legend()
-        else:
-            sns.lineplot(data=all_ev, x="N", y="Re", hue="I+B")
-            plt.title("The eigenvalues for varying N")
-            plt.ylim([-0.01,40])
-            plt.legend()
-
-
-    plot_filename = "EVal"
-    if F:
-        plot_filename += '_F'
-    elif H:
-        plot_filename += '_H'
-
-    if TEST == Test.VARY_N:
-        plot_filename += "_" + Re_Im
-
-    if vary_N: 
-        plot_filename += "_EvalNr_" + str(NEVALS) + "-" + str(LEVAL + NEVALS-1)
-
-    if TEST == Test.SIG_UNIT_CIRCLE:
-        plot_filename += "_sig_cos_isin_n_" + str(48)
-    elif vary_sig_Im:
-        plot_filename += "_sig_" + str(1) + "_i" + str(0) + "-" + str(20)
-    elif TEST == Test.VARY_N:
-        plot_filename += "_sig_" + str(1) + "_i" + str(0)
-
-    if TEST == Test.SIG_UNIT_CIRCLE or vary_sig_Im:
-        plot_filename += "_NEvals_" + str(NEVALS)
-        plot_filename += "_N_" + str(N)
-    elif TEST == Test.VARY_N:
-        plot_filename += "_N_" + str(i_min) + "-" + str(i_max)
-
-    plot_filename += "_K_" + K
-
-    plot_filename += "_on_"+ str(V_MIN) +'-'+ str(V_MAX)
-
-    #plt.ylim([-0.01,40])
-
-    if SAVE:
-        #plt.savefig(os.path.join(ROOT_FIGURES, 'EVal_sigma_1_i0-20_NEvals_8_on_-100_100'))
-        plt.savefig(os.path.join(ROOT_FIGURES_MODEL, plot_filename))
-
-    if SHOW:
-        plt.show()
-    """
-    pass
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # Tests:
@@ -200,12 +134,13 @@ if __name__ == "__main__":
         assert False, "Must specify test, see test enum in analysis_settings.py"
     
     if TEST == Test.VARY_N:
-        test = Test_vary_N(K,True,False,True,1,0,"PERIODIC",True)
-        test2 = Test_vary_N(K,False,False,False,1,0,"SBP",False)
+        test = Test_vary_N(K,True,False,True,1,0,"PERIODIC",True,"Re",NEVALS,LEVAL,V_MIN,V_MAX)
+        test2 = Test_vary_N(K,False,False,False,1,0,"SBP",False, "Re", NEVALS,LEVAL,V_MIN,V_MAX)
 
         test.loop(100,2000,10)
         test2.loop(100,2000,10)
 
-        test.merge(test2)
+        test.merge(test2, "PERIODIC_VS_SBP")
         test.plot()
+        if SAVE: test.save()
         plt.show()
