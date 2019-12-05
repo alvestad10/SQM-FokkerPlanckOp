@@ -49,15 +49,15 @@ int main() {
     /*
     * SPACE PARAMETERs
     */
-    double x_min = -20.0;
-    double x_max = 20.0;
+    double x_min = -100.0;
+    double x_max = 100.0;
     //int N = 500;
     //double a = (x_max-x_min) / (double)N;
 
     /*
     * TEST RELATED PARAMETERS
     */
-    int n_min = 0;//3700;
+    int n_min = 6;//3700;
     int n_max = 50;//10000;
     int n_step = 1;//100;
 
@@ -76,7 +76,7 @@ int main() {
         //complex_d sig(1.0,n);
         complex_d sig(cos(n*M_PI/(n_max/2.0)), sin(n*M_PI/(n_max/2.0)));
         complex_d K = 1;//std::conj(sig);
-        int N = 200;
+        int N = 500;
         double a = (x_max-x_min) / (double)N;
 
         /* CONSTRUCT MATRICES */
